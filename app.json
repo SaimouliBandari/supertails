@@ -32,6 +32,16 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/Gotham-Rounded-Bold.ttf",
+            "assets/fonts/Gotham-Rounded-Light.ttf",
+            "assets/fonts/Gotham-Rounded-Medium.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {
