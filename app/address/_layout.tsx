@@ -9,6 +9,7 @@ export default function AddressLayout() {
       }}>
         <Stack.Screen name="addAddress" options={{headerShown: false}}/>
         <Stack.Screen name="location" options={{headerShown: false}}/>
+        <Stack.Screen name="confirmLocation" options={{headerShown: false}}/>
 
       </Stack>
     </>

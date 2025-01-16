@@ -64,6 +64,10 @@ module.exports = {
           DEFAULT: 'hsla(var(--text-primary))',
           foreground: 'hsla(var(--text-foreground))',
         },
+        secondary: {
+          DEFAULT: 'hsla(var(--primary))',
+          foreground: 'hsla(var(--primary-foreground))',
+        },
         placeholder: 'hsla(var(--placeholder))'
       }
     },

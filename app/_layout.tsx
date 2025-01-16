@@ -28,7 +28,7 @@ export default function RootLayout() {
       headerShown: false
     }}>
       <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="/address/addAddress" options={{headerShown: true}}/>
+      {/* <Stack.Screen name="/address/addAddress" options={{headerShown: true}}/> */}
     </Stack>
   </SafeAreaProvider>
 }
