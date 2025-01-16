@@ -23,7 +23,8 @@
         "googleMaps": {
           "apiKey": "AIzaSyAasxoqliptkWaRVgUnQ08nBi0OiPktvEw"
         }
-      }
+      },
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
@@ -60,6 +61,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "assets": ["./assets/fonts/"]
   }
 }

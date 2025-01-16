@@ -5,7 +5,6 @@
 
 @layer base {
 
-  
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 100%;
@@ -23,15 +22,15 @@
     --accent-foreground: 27 100% 47% 1;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 0 0% 0% 0.2;
+    --border-grey: 217 19% 27% 1 --input: 240 5.9% 90%;
     --ring: 27 100% 47% 1;
     --text-primary: 240 5% 11% 1;
     --text-foreground: 0 0% 100% 1;
-    --placeholder:0 1% 58% 1;
+    --placeholder: 0 1% 58% 1;
   }
 
-  .dark:root {
+  /* .dark:root {
     --background: 0 0% 100%;
     --foreground: 0 0% 98%;
     --card: 0 0% 97%;
@@ -54,7 +53,7 @@
     --text-primary: 240 5% 11% 1;
     --text-foreground: 0 0% 100% 1;
     --placeholder:0, 1%, 58%, 1;
-  }
+  } */
 }
 
 /* font-family: Gotham Rounded;
