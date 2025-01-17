@@ -50,3 +50,4 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 https://supertails.notion.site/Developer-Frontend-Assignment-165b6b2163f980a28fb4e19b843b3b87
 
+https://www.figma.com/file/w7f6zLkyskgbWOzdYQUvOh?node-id=0:1&locale=en&type=design
