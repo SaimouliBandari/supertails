@@ -48,7 +48,7 @@ export default function SearchAddress() {
 
   const fetchPlaces = async (text: string) => {
     setQuery(text);
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}&language=en`;
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`;
     try {
       const response = await fetch(url);
       const data = await response.json();
