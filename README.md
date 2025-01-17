@@ -48,3 +48,5 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+https://supertails.notion.site/Developer-Frontend-Assignment-165b6b2163f980a28fb4e19b843b3b87
+
