@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import { reverseGeocodeAsync, requestForegroundPermissionsAsync, getCurrentPositionAsync } from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -54,6 +54,7 @@ export default function LocationPicker() {
   const [address, setAddress] = useState<any | null>(null);
   const { location, setLocationAndAddress } = useGeoLocationStore()
   const [region, setRegion] = useState<Region | null>(regionDataGenerator(location?.latitude, location?.longitude));
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (location) {
@@ -99,6 +100,36 @@ export default function LocationPicker() {
     })
   }
 
+    /**
+     * Fetches place predictions from the Google Places API based on the input text.
+     * 
+     * @param {string} text - The input text to search for place predictions.
+     * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
+     * 
+     * @throws Will log an error to the console if the fetch operation fails.
+     */
+    const fetchPlaces = async (text: string) => {
+
+    
+      setQuery(text);
+      let parmas = `&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`
+      if (!location?.latitude || !location?.longitude) {
+        parmas = `&language=en`
+      }
+      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${parmas}`;
+      console.log(url);
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data.predictions[0]);
+        
+        // setResults(data.predictions || []);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   const icon = (
     <TouchableOpacity onPress={onBackNavigation}>
       <View className="h-[40px] w-[40px] flex flex-col justify-center items-center me-[4px]">
@@ -116,14 +147,17 @@ export default function LocationPicker() {
       <View className="h-full">
         <Header title="Select delivery location" icon={icon} />
         <View className="flex-1 w-full h-full" style={styles.container}>
-          <GooglePlacesAutocomplete
+          {/* <GooglePlacesAutocomplete
             ref={searchRef}
             placeholder="Search area, street, name..."
             fetchDetails={true}
+            enableHighAccuracyLocation={true}
+            nearbyPlacesAPI="GooglePlacesSearch"
             onPress={(data, details: any) => {
               // Extract the location details
               const { lat, lng } = details.geometry.location;
-
+              console.log(lat, lng);
+              
               // Update the map's region
               setRegion({
                 latitude: lat,
@@ -144,16 +178,28 @@ export default function LocationPicker() {
             }}
             query={{
               key: GOOGLE_API_KEY,
-              language: "en",
-              radius: 50000,
-              location: `${region?.latitude},${region?.longitude}`,
+              language: "en",              
             }}
             styles={{
               container: styles.autocompleteContainer,
               textInput: styles.textInput,
-
             }}
-          />
+          /> */}
+
+                  <View className=" bg-card h-[48px] shadow-white border-[1px] rounded-[16px] flex flex-row mx-[16px] mt-[14px]" style={styles.autocompleteContainer}>
+                    <View className="pt-[16px] pe-[7.5px] ms-[16px]">
+                      <Image
+                        source={require("../../assets/images/search.png")}
+                        style={{ width: 18, height: 18 }}
+                      />
+                    </View>
+                    <TextInput
+                      className="flex-1"
+                      placeholder="Search area, street, name..."
+                      value={query}
+                      onChangeText={fetchPlaces}
+                    />
+                  </View>
 
           <TouchableOpacity
             className="bg-card rounded-[6px] flex justify-center items-center"
@@ -248,7 +294,7 @@ const styles = StyleSheet.create({
     top: 16,
     left: 40,
     right: 40,
-    zIndex: 1,
+    zIndex: 1000,
     width: 355,
     height: 48
   },
