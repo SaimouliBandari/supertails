@@ -5,24 +5,40 @@ import useGeoLocationStore from "@/store/geoLocationStore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-  Keyboard,
+  View
 } from "react-native";
 
 //TODO align add address manually.
+//TODO add navigation to onLocationSelection
+//TODO add navigation to onManualAddressEntry
+//TODO add navigation to onBackNavigation
 
+/**
+ * The `SearchAddress` component allows users to search for addresses using the Google Places API,
+ * select their current location, or manually enter an address. It displays search results based on
+ * the user's input and provides navigation options.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ *
+ * @example
+ * <SearchAddress />
+ *
+ * @remarks
+ * This component uses the `useGeoLocationStore` hook to access and set the user's geolocation.
+ * It also uses the `useRouter` hook from `expo-router` for navigation.
+ *
+ * @todo Implement navigation for the `onLocationSelection` function.
+ */
 export default function SearchAddress() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -34,7 +50,7 @@ export default function SearchAddress() {
     router.back();
   };
 
-  const onSaveAddress = () => { };
+  const onSaveAddress = () => { }
 
   const onManualAddressEntry = () => {
     router.push("/address/addAddressManually");
@@ -44,6 +60,14 @@ export default function SearchAddress() {
     // TODO Need to implement navigation
   };
 
+  /**
+   * Fetches place predictions from the Google Places API based on the input text.
+   * 
+   * @param {string} text - The input text to search for place predictions.
+   * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
+   * 
+   * @throws Will log an error to the console if the fetch operation fails.
+   */
   const fetchPlaces = async (text: string) => {
     const signal = controller.signal;
     controller.abort()
