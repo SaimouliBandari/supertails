@@ -28,7 +28,7 @@ export default function SearchAddress() {
   const [results, setResults] = useState([]);
   const router = useRouter();
   const { location, setLocation } = useGeoLocationStore()
-
+  const controller = new AbortController();
 
   const onBackNavigation = () => {
     router.back();
@@ -42,15 +42,20 @@ export default function SearchAddress() {
 
   const onLocationSelection = (location: any) => {
     // TODO Need to implement navigation
-
-
   };
 
   const fetchPlaces = async (text: string) => {
+    const signal = controller.signal;
+    controller.abort()
+  
     setQuery(text);
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`;
+    let parmas = `&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`
+    if (!location?.latitude || !location?.longitude) {
+      parmas = `&language=en`
+    }
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${parmas}`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {signal});
       const data = await response.json();
       setResults(data.predictions || []);
     } catch (error) {
