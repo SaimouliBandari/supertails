@@ -145,6 +145,8 @@ export default function LocationPicker() {
             query={{
               key: GOOGLE_API_KEY,
               language: "en",
+              radius: 50000,
+              location: `${region?.latitude},${region?.longitude}`,
             }}
             styles={{
               container: styles.autocompleteContainer,
