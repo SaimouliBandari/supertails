@@ -4,7 +4,7 @@ import useStore from "@/store/store";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { lazy, useRef } from "react";
+import React, { lazy, useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -42,7 +42,7 @@ const saveAsButtons = [
 export default function LocationPicker() {
   const mapRef = useRef<MapView>(null);
   const router = useRouter();
-  const { location: region, address } = useStore()
+  const { location: region, address, deliveryAddress } = useStore()
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -57,8 +57,19 @@ export default function LocationPicker() {
       receiverPhone: "",
       petName: "",
       saveAddressAs: "",
+      saveAsOthers: ""
     },
   });
+
+  useEffect(() => {
+
+
+    reset({
+      ...deliveryAddress.address,
+      ...deliveryAddress.user
+    })
+
+  }, [])
 
   const onBackNavigation = () => {
     router.back();
@@ -217,41 +228,16 @@ export default function LocationPicker() {
                             </TouchableOpacity>
                           })
                         }
-                        {/* {value !== "others" && <>
-                          <TouchableOpacity onPress={() => onChange("home")}>
-                            <View className={classNames("w-[68px] h-[26px] rounded-[4px] border-[0.4px] flex flex-row justify-center items-center border-outline", value == "home" ? "bg-[#FFEAD8] border-primary" : "")}>
-                              <Image
-                                source={require("../../assets/images/house-solid-active.svg")}
-                                style={{ width: 18, height: 18 }}
-                              />
-                              <Text className={classNames("font-gotham py-[6px] ps-[2px] font-[325] text-[12px] leading-[14.4px]", value == "home" ? " text-secondary" : "")}>
-                                Home
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => onChange("office")}>
-                            <View className={classNames("w-[68px] h-[26px] rounded-[4px] border-[0.4px] flex flex-row justify-center items-center border-outline", value == "office" ? "" : "")}>
-                              <Image
-                                source={require("../../assets/images/office-solid.png")}
-                                style={{ width: 18, height: 18 }}
-                              />
-                              <Text className="font-gotham py-[6px] ps-[2px] font-[325] text-[12px] leading-[14.4px]">
-                                Office
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                        </>}
-                        <TouchableOpacity onPress={() => onChange("others")}>
-                          <View className={classNames("w-[68px] h-[26px] rounded-[4px] border-[0.4px] flex flex-row justify-center items-center border-outline", value == "others" ? "" : "")}>
-                            <Image
-                              source={require("../../assets/images/others-solid.png")}
-                              style={{ width: 18, height: 18 }}
-                            />
-                            <Text className="font-gotham py-[6px] ps-[2px] font-[325] text-[12px] leading-[14.4px]">
-                              Others
-                            </Text>
-                          </View>
-                        </TouchableOpacity> */}
+                        {value == "others" && <Controller
+                          control={control}
+                          name="saveAsOthers"
+                          rules={{ required: "This field is required" }}
+                          render={({ field: { onChange, value } }) => (<>
+                            <TextInput className="flex-1 placeholder:text-[12px] placeholder:text-placeholder border-b-[0.4px]"
+                              placeholder="Save as"
+                              onChangeText={onChange}
+                              value={value} />
+                          </>)} />}
                       </View>
                     )}
                   />
@@ -266,11 +252,11 @@ export default function LocationPicker() {
                       </View>
                       <Controller
                         control={control}
-                        name="houseFlat"
+                        name="receiverName"
                         render={({ field: { onChange, value } }) => (
                           <TextInput
                             className=" flex-1 h-[48px] p-3  rounded-[16px] placeholder:text-[12px] placeholder:text-placeholder"
-                            placeholder="House No./Flat no."
+                            placeholder="Receiver's name"
                             onChangeText={onChange}
                             value={value}
                           />
@@ -287,11 +273,11 @@ export default function LocationPicker() {
                       </View>
                       <Controller
                         control={control}
-                        name="buildingNo"
+                        name="receiverPhone"
                         render={({ field: { onChange, value } }) => (
                           <TextInput
                             className=" flex-1 h-[48px] p-3  rounded-[16px] placeholder:text-[12px] placeholder:text-placeholder"
-                            placeholder="Building Name"
+                            placeholder="Receiver's phone number"
                             onChangeText={onChange}
                             value={value}
                           />
@@ -308,11 +294,11 @@ export default function LocationPicker() {
                       </View>
                       <Controller
                         control={control}
-                        name="roadName"
+                        name="petName"
                         render={({ field: { onChange, value } }) => (
                           <TextInput
                             className=" flex-1 h-[48px] p-3 rounded-[16px] placeholder:text-[12px] placeholder:text-placeholder"
-                            placeholder="Landmark"
+                            placeholder="Pet's name"
                             onChangeText={onChange}
                             value={value}
                           />

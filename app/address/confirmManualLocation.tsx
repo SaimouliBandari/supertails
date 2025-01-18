@@ -1,5 +1,6 @@
 import AddressPlaceholder from "@/components/addressPlaceholder";
 import Header from "@/components/header/header";
+import LocationPermission from "@/components/locationPermision";
 import { GOOGLE_API_KEY } from "@/constants/variables";
 import { getPlaceDetails } from "@/services/location.api.service";
 import useStore from '@/store/store';
@@ -30,7 +31,8 @@ async function getCurrentLocation() {
   let { status } = await requestForegroundPermissionsAsync();
 
   if (status !== "granted") {
-    return;
+    // Added this extra functionality
+    return "Not granted";
   }
 
   let location = await getCurrentPositionAsync({});
@@ -55,7 +57,7 @@ export default function LocationPicker() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [isUserChangedLocation, setIsUserChangedLocation] = useState(false);
-
+  const [showEnableModal, setShowEnableModal] = useState(true);
 
   useEffect(() => {
     if (location) {
@@ -112,6 +114,12 @@ export default function LocationPicker() {
   const onCurrentLocation = () => {
     setIsUserChangedLocation(true);
     getCurrentLocation().then((location) => {
+
+      if (location == "Not granted") {
+        setShowEnableModal(true)
+        return
+      }
+
       if (location) {
         setRegion(regionDataGenerator(location.latitude, location.longitude));
         if (mapRef.current) {
@@ -200,11 +208,11 @@ export default function LocationPicker() {
   return (
     <SafeAreaView>
       <View className="h-full">
-        <Header title="Select delivery location" icon={icon} />
+        <Header title="Confirm location" icon={icon} />
         <View className="flex-1 w-full h-full" style={styles.container}>
 
           <View style={styles.autocompleteContainer} className="bg-transparent">
-            <View className="flex flex-row justify-center w-[334px] bg-[#FFFFFF] rounded-[16px] border-[1px] border-[#EAECF0] h-[48px]">
+            <View style={{ width: 343 }} className="flex flex-row justify-center bg-[#FFFFFF] rounded-[16px] border-[1px] border-[#EAECF0] h-[48px]">
               <View className="pt-[16px] pe-[7.5px] ms-[16px]">
                 <Image
                   source={require("../../assets/images/search.png")}
@@ -218,6 +226,10 @@ export default function LocationPicker() {
                 value={query}
                 onChangeText={fetchPlaces}
               />
+            </View>
+            <View style={{ marginTop: -14, zIndex: -1, borderBottomEndRadius: 16, borderBottomStartRadius: 16, width: 343, backgroundColor: '#FFF6F7', height: 64 }}>
+
+              <LocationPermission showEnableModal={showEnableModal} styles={{ borderBottomEndRadius: 16, borderBottomStartRadius: 16, marginTop: 14, display: 'flex', justifyContent: 'center', maxWidth: 343 }} onCloseEv={() => { setShowEnableModal(false) }} />
             </View>
             <FlatList
               data={results}
@@ -351,7 +363,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
-
   },
   currentLocationButtonContainer: {
     position: "absolute",
