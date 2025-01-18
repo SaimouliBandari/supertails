@@ -7,16 +7,18 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const LocationPermission = () => {
     const [modalVisible, setModalVisible] = React.useState(false);
     return (
-        <View className="flex flex-row justify-around items-center h-[46px]  pe-[16px] bg-[#FFF6F7] ">
-            <View className='ms-[16px] me-[8px]'>
-                <Image
-                    source={require('../assets/images/pin-add-diabled.png')}
-                    style={{ width: 32, height: 32 }}
-                />
-            </View>
-            <View className='h-[30px] min-w-[235px] my-[8px] me-[6px]'>
-                <Text className="font-gotham font-[350] text-[12px] leading-[14.4px]">Enable location permission</Text>
-                <Text className="font-lato font-[400] text-[10px] leading-[19.2px] mb-4">Your precise location helps us deliver on time            </Text>
+        <View className="flex flex-row justify-between items-center h-[46px] bg-[#FFF6F7] ">
+            <View className='flex flex-row justify-start items-center'>
+                <View className='ms-[16px] me-[8px]'>
+                    <Image
+                        source={require('../assets/images/pin-add-diabled.png')}
+                        style={{ width: 32, height: 32 }}
+                    />
+                </View>
+                <View className='h-[30px] min-w-[235px] my-[8px] me-[6px]'>
+                    <Text className="font-gotham font-[350] text-[12px] leading-[14.4px]">Enable location permission</Text>
+                    <Text className="font-lato font-[400] text-[10px] leading-[19.2px] mb-4">Your precise location helps us deliver on time            </Text>
+                </View>
             </View>
             <TouchableOpacity
                 className="bg-primary w-[68px] h-[28px] rounded-[8px] flex justify-center items-center me-[16px]"
