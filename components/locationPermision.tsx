@@ -1,13 +1,22 @@
-import React from 'react';
-import { View, Text, Button, TouchableOpacity, Modal, Linking, TouchableWithoutFeedback } from 'react-native';
 import { Image } from 'expo-image';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import React, { useEffect } from 'react';
+import { Linking, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 
-const LocationPermission = () => {
-    const [modalVisible, setModalVisible] = React.useState(false);
+const LocationPermission = ({ showEnableModal = false, styles = {}, onCloseEv = () => { } }) => {
+
+    useEffect(() => {
+        setModalVisible(showEnableModal)
+    }, [showEnableModal])
+
+    const onModalClose = () => {
+        setModalVisible(false)
+        onCloseEv()
+    }
+
+    const [modalVisible, setModalVisible] = React.useState(showEnableModal);
     return (
-        <View className="flex flex-row justify-between items-center h-[46px] bg-[#FFF6F7]" >
+        <View className="flex flex-row justify-between items-center h-[46px] bg-[#FFF6F7]" style={styles} >
             <View className='flex flex-row justify-start items-center'>
                 <View className='ms-[16px] me-[8px]'>
                     <Image
@@ -15,7 +24,7 @@ const LocationPermission = () => {
                         style={{ width: 32, height: 32 }}
                     />
                 </View>
-                <View className='h-[30px] min-w-[235px] my-[8px] me-[6px]'>
+                <View className='h-[30px] my-[8px]'>
                     <Text className="font-gotham font-[350] text-[12px] leading-[14.4px]">Enable location permission</Text>
                     <Text className="font-lato font-[400] text-[10px] leading-[19.2px] mb-4">Your precise location helps us deliver on time            </Text>
                 </View>
@@ -33,9 +42,9 @@ const LocationPermission = () => {
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
+                onRequestClose={onModalClose}
             >
-                <TouchableWithoutFeedback onPress={() =>setModalVisible(false)}>
+                <TouchableWithoutFeedback onPress={onModalClose}>
 
                     <View className="flex-1 justify-center items-center bg-opacity-50">
                         <View className="bg-[#FFFFFF] rounded-[16px] w-[249px] h-[256px] p-[16px] ">
