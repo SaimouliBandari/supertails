@@ -1,4 +1,5 @@
 import { GOOGLE_API_KEY } from "@/constants/variables";
+import { reduceGeocodingData } from "@/utils/helper";
 
 export const reverseGeocode = async ({ latitude, longitude }: { latitude: number, longitude: number }) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
@@ -53,4 +54,21 @@ export const getPlaceDetails = async (placeId: string) => {
     }
 };
 
+export const getAddressesFromZipCode = async (zipCode: string) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${zipCode}&key=${GOOGLE_API_KEY}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            const addresses = reduceGeocodingData(data.results);
+            console.log("Addresses:", JSON.stringify(addresses[0], null, 2));
+            return addresses;
+        } else {
+            console.log("No addresses found for the given zip code.");
+        }
+    } catch (error) {
+        console.warn("Error fetching addresses from zip code:", error);
+    }
+}
 
