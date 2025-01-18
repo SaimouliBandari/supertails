@@ -1,4 +1,4 @@
-import useGeoLocationStore from '@/store/geoLocationStore';
+import useStore from '@/store/store';
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -7,13 +7,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const router = useRouter();
-  const { setLocation } = useGeoLocationStore()
+  const { setLocation, setIsLocationPermissionGranted } = useStore()
 
   async function getCurrentLocation() {
 
     let { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
+      setIsLocationPermissionGranted(false);
       router.push("/address/searchAddress");
       return;
     }
@@ -22,7 +23,7 @@ export default function Index() {
     router.push({
       pathname: "/address/location",
     });
-
+    setIsLocationPermissionGranted(true);
     setLocation({
       latitude: +location.coords.latitude,
       longitude: +location.coords.longitude,
