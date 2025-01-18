@@ -45,20 +45,25 @@ export const getPlaceDetails = async (placeId: string) => {
     try {
         const response = await fetch(url);
         const data = await response.json();
-        if (data.result) {
-            console.log("Place Name:", data.result.name);
-            console.log("Full Address:", data.result.formatted_address);
-        }
+        console.log("Place Details:");
+
+        const { lat, lng } = data.result.geometry.location;
+        const formatted_address = data.result.formatted_address;
+        const { name, address_components, place_id, plus_code, url: address_url } = data.result;
+        return { latitude: lat, longitude: lng, formatted_address, name, address_components, place_id, plus_code, address_url }
     } catch (error) {
         console.warn("Error fetching place details:", error);
+        throw new Error("Error fetching place details");
     }
 };
+
+let getAddressesFromZipCodeController = new AbortController();
 
 export const getAddressesFromZipCode = async (zipCode: string) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${zipCode}&key=${GOOGLE_API_KEY}`;
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: getAddressesFromZipCodeController.signal });
         const data = await response.json();
         if (data.results && data.results.length > 0) {
             const addresses = reduceGeocodingData(data.results);
@@ -71,4 +76,3 @@ export const getAddressesFromZipCode = async (zipCode: string) => {
         console.warn("Error fetching addresses from zip code:", error);
     }
 }
-
