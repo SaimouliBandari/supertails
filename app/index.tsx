@@ -1,6 +1,7 @@
 import useStore from '@/store/store';
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
+import { useState } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
 import "react-native-get-random-values";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Index() {
   const router = useRouter();
   const { setLocation, setIsLocationPermissionGranted } = useStore()
+  const [userType, setUserType] = useState("new");
 
   async function getCurrentLocation() {
 
@@ -33,13 +35,37 @@ export default function Index() {
   }
 
   const onAddAddress = () => {
-    getCurrentLocation();
+    if (userType === "new") {
+      getCurrentLocation();
+    } else {
+      router.push("/address/selectAddress");
+    }
   };
 
   return (
     <SafeAreaView>
-      <View className="flex flex-col justify-end items-center h-full">
+      <View className="flex flex-col justify-between  items-center h-full">
         {/* <Text>Edit app/index.tsx to edit this screen.</Text> */}
+        <View className='flex flex-col justify-center items-center flex-1 gap-10'>
+          <TouchableOpacity
+            className="bg-primary-foreground border-[0.6px] border-primary w-[343px] h-[48px] rounded-[6px] flex justify-center items-center"
+            onPress={() => setUserType("existing")}
+          >
+            <Text className="text-secondary font-gotham font-[325] text-[16px] text-center leading-[19.2px]">
+              Existing User
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-primary-foreground border-[0.6px] border-primary w-[343px] h-[48px] rounded-[6px] flex justify-center items-center"
+            onPress={() => setUserType("new")}
+          >
+            <Text className="text-secondary font-gotham font-[325] text-[16px] text-center leading-[19.2px]">
+              New User
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+
         <View className="bg-foreground w-full h-[76px] flex justify-center items-center">
           <TouchableOpacity
             className="bg-primary w-[343px] h-[48px] rounded-[6px] flex justify-center items-center"
