@@ -1,12 +1,12 @@
-import AddressPlaceholder from "@/components/addressPlaceholder";
 import Header from "@/components/header/header";
 import { GOOGLE_API_KEY } from "@/constants/variables";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
+import AddressPlaceholder from "@/components/addressPlaceholder";
 import { reverseGeocodeAsync, requestForegroundPermissionsAsync, getCurrentPositionAsync } from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -55,6 +55,8 @@ export default function LocationPicker() {
   const { location, setLocationAndAddress } = useGeoLocationStore()
   const [region, setRegion] = useState<Region | null>(regionDataGenerator(location?.latitude, location?.longitude));
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+
 
   useEffect(() => {
     if (location) {
@@ -79,8 +81,22 @@ export default function LocationPicker() {
   };
 
   const onRegionChange = (region: Region) => {
-    reverseGeocodeAsync(region).then((address) => {
-      setAddress(address[0])
+    console.log(region);
+    
+    // getGeoCode(region.longitude, region.latitude);
+    reverseGeocodeAsync(region).then(([address]) => {
+      console.log(address, "address");
+      setAddress({
+        name: address.streetNumber,
+        latitude: region.latitude,
+        longitude: region.longitude,
+        formatted_address:generateAddress(address), 
+        address_components:[],
+        place_id: null,
+        plus_code:null,
+        address_url:null 
+      })
+      // setAddress(address[0])
     });
   };
 
@@ -100,35 +116,77 @@ export default function LocationPicker() {
     })
   }
 
-    /**
-     * Fetches place predictions from the Google Places API based on the input text.
-     * 
-     * @param {string} text - The input text to search for place predictions.
-     * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
-     * 
-     * @throws Will log an error to the console if the fetch operation fails.
-     */
-    const fetchPlaces = async (text: string) => {
+  const getGeoCode = async (longitude:number, latitude:number) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(JSON.stringify(data.result));
+  }
 
-    
-      setQuery(text);
-      let parmas = `&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`
-      if (!location?.latitude || !location?.longitude) {
-        parmas = `&language=en`
+  const fetchGeoCode = async (place_id: string) => {
+    // https://maps.googleapis.com/maps/api/place/details/json?place_id=PLACE_ID&key=YOUR_API_KEY
+
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=${GOOGLE_API_KEY}`;
+    // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+    console.log(url);
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      const { lat, lng } = data.result.geometry.location;
+      const formatted_address = data.result.formatted_address;
+      const { name, address_components, place_id, plus_code, url: address_url } = data.result;
+      console.log(JSON.stringify({ lat, lng, formatted_address, name, address_components, place_id, plus_code, address_url }));
+      setRegion({
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+
+      // Move the map to the selected location
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.002,
+          longitudeDelta: 0.002,
+        });
       }
-      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${parmas}`;
-      console.log(url);
-      
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data.predictions[0]);
-        
-        // setResults(data.predictions || []);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+      setAddress({ latitude:lat, longitude: lng, formatted_address, name, address_components, place_id, plus_code, address_url });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Fetches place predictions from the Google Places API based on the input text.
+   * 
+   * @param {string} text - The input text to search for place predictions.
+   * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
+   * 
+   * @throws Will log an error to the console if the fetch operation fails.
+   */
+  const fetchPlaces = async (text: string) => {
+
+    setQuery(text);
+    let params = `&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`
+    if (!location?.latitude || !location?.longitude) {
+      params = `&language=en`
+    }
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${params}&radius=50000`;
+    console.log(url);
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      console.log(data.predictions[0]);
+
+      setResults(data.predictions || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const icon = (
     <TouchableOpacity onPress={onBackNavigation}>
@@ -185,22 +243,53 @@ export default function LocationPicker() {
               textInput: styles.textInput,
             }}
           /> */}
+          <View style={styles.autocompleteContainer} className="bg-transparent">
+            <View className="flex flex-row justify-center w-[334px] bg-[#FFFFFF] rounded-[16px] border-[1px] border-[#EAECF0] h-[48px]">
+              <View className="pt-[16px] pe-[7.5px] ms-[16px]">
+                <Image
+                  source={require("../../assets/images/search.png")}
+                  style={{ width: 18, height: 18 }}
+                />
+              </View>
+              <TextInput
+                className="flex-1"
+                placeholder="Search area, street, name..."
+                value={query}
+                onChangeText={fetchPlaces}
+              />
+            </View>
+            <FlatList
+              data={results}
+              className="bg-[#FFFFFF] rounded-[16px] mt-[2px] max-h-[200px] w-[334px]"
+              renderItem={({ item }) => (
+                <>
+                  <TouchableOpacity onPress={() => fetchGeoCode(item.place_id)}>
+                    <View className="h-[69px] py-[10px]">
+                      <View className="flex flex-row">
+                        <Image
+                          source={require("../../assets/images/pin-location.png")}
+                          style={{ height: 24, width: 24 }}
+                        />
+                        <View className="ms-[13px]">
+                          <Text className="font-gotham text-[14px] font-[350] leading-[16.8px] text-primary mb-[3px]">
+                            {item.structured_formatting.main_text}
+                          </Text>
 
-                  <View className=" bg-card h-[48px] shadow-white border-[1px] rounded-[16px] flex flex-row mx-[16px] mt-[14px]" style={styles.autocompleteContainer}>
-                    <View className="pt-[16px] pe-[7.5px] ms-[16px]">
-                      <Image
-                        source={require("../../assets/images/search.png")}
-                        style={{ width: 18, height: 18 }}
-                      />
+                          <Text className="font-lato text-[12px] font-[400] leading-[16.2px] ">
+                            {item.structured_formatting.secondary_text}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
-                    <TextInput
-                      className="flex-1"
-                      placeholder="Search area, street, name..."
-                      value={query}
-                      onChangeText={fetchPlaces}
-                    />
-                  </View>
+                  </TouchableOpacity>
+                </>
+              )}
+            />
+          </View>
 
+          <View>
+            
+          </View>
           <TouchableOpacity
             className="bg-card rounded-[6px] flex justify-center items-center"
             onPress={onCurrentLocation}
@@ -265,7 +354,7 @@ export default function LocationPicker() {
             </Marker>
           </MapView>
           <View className="h-[145px] bg-card flex flex-col justify-center items-center">
-            <AddressPlaceholder onChange={onLocationChangeRequest} name={address?.name} address={generateAddress(address)} />
+            <AddressPlaceholder onChange={onLocationChangeRequest} name={address?.name} address={address?.formatted_address} />
             <TouchableOpacity
               className="bg-primary w-[343px] h-[35px] rounded-[6px] flex justify-center items-center"
               onPress={() => onConformationNavigation()}
@@ -292,11 +381,15 @@ const styles = StyleSheet.create({
   autocompleteContainer: {
     position: "absolute",
     top: 16,
-    left: 40,
-    right: 40,
-    zIndex: 1000,
-    width: 355,
-    height: 48
+    left: 0,
+    right: 0,
+    zIndex: 1,
+
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+
   },
   currentLocationButton: {
     position: "absolute",
@@ -322,3 +415,5 @@ const styles = StyleSheet.create({
     borderColor: "#EAECF0",
   },
 });
+
+
