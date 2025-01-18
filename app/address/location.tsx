@@ -1,21 +1,21 @@
+import AddressPlaceholder from "@/components/addressPlaceholder";
 import Header from "@/components/header/header";
 import { GOOGLE_API_KEY } from "@/constants/variables";
+import useStore from '@/store/store';
+import { generateAddress } from "@/utils/generator.service";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import classNames from "classnames";
 import { Image } from "expo-image";
-import AddressPlaceholder from "@/components/addressPlaceholder";
-import { reverseGeocodeAsync, requestForegroundPermissionsAsync, getCurrentPositionAsync } from "expo-location";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { getCurrentPositionAsync, requestForegroundPermissionsAsync, reverseGeocodeAsync } from "expo-location";
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import {
-  GooglePlacesAutocomplete,
-  GooglePlacesAutocompleteRef,
+  GooglePlacesAutocompleteRef
 } from "react-native-google-places-autocomplete";
 import type { Region } from "react-native-maps";
 import MapView, { MapMarker, Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useGeoLocationStore from '@/store/geoLocationStore';
-import { generateAddress } from "@/utils/generator.service";
 
 export function regionDataGenerator(latitude: any = 0, longitude: any = 0) {
   return {
@@ -50,18 +50,19 @@ export default function LocationPicker() {
   const router = useRouter();
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef<MapMarker>(null);
-  const searchRef = useRef<GooglePlacesAutocompleteRef>(null);
+  const searchRef = useRef<TextInput>(null);
   const [address, setAddress] = useState<any | null>(null);
-  const { location, setLocationAndAddress } = useGeoLocationStore()
+  const { location, setLocationAndAddress } = useStore()
   const [region, setRegion] = useState<Region | null>(regionDataGenerator(location?.latitude, location?.longitude));
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [isUserChangedLocation, setIsUserChangedLocation] = useState(false);
 
 
   useEffect(() => {
     if (location) {
       setRegion(regionDataGenerator(location.latitude, location.longitude));
-      onRegionChange(location as Region);
+      onRegionChange(location as Region, true);
     }
   }, [location]);
 
@@ -71,6 +72,7 @@ export default function LocationPicker() {
 
   const onConformationNavigation = () => {
     router.push("/address/confirmLocation");
+    setIsUserChangedLocation(false);
     setLocationAndAddress(region as Region, address);
   };
 
@@ -80,27 +82,37 @@ export default function LocationPicker() {
     }
   };
 
-  const onRegionChange = (region: Region) => {
-    console.log(region);
-    
-    // getGeoCode(region.longitude, region.latitude);
+  const onOutOfFocus = () => {
+    setQuery("");
+    setResults([]);
+  }
+
+
+  const onRegionChange = (region: Region, isInitial?: any) => {
+    console.log("onRegionChange >>> ", region, isUserChangedLocation);
+
+    if (!isUserChangedLocation && isInitial !== true) {
+      return;
+    }
+
     reverseGeocodeAsync(region).then(([address]) => {
-      console.log(address, "address");
+      console.log("reverseGeocodeAsync >>> ", address, "address");
       setAddress({
-        name: address.streetNumber,
+        name: address.name,
         latitude: region.latitude,
         longitude: region.longitude,
-        formatted_address:generateAddress(address), 
-        address_components:[],
+        formatted_address: generateAddress(address),
+        address_components: [],
         place_id: null,
-        plus_code:null,
-        address_url:null 
+        plus_code: null,
+        address_url: null
       })
-      // setAddress(address[0])
     });
   };
 
+
   const onCurrentLocation = () => {
+    setIsUserChangedLocation(true);
     getCurrentLocation().then((location) => {
       if (location) {
         setRegion(regionDataGenerator(location.latitude, location.longitude));
@@ -116,27 +128,24 @@ export default function LocationPicker() {
     })
   }
 
-  const getGeoCode = async (longitude:number, latitude:number) => {
+  const getGeoCode = async (longitude: number, latitude: number) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
-    console.log(JSON.stringify(data.result));
+    console.log("getGeoCode >>> ", data);
   }
 
   const fetchGeoCode = async (place_id: string) => {
-    // https://maps.googleapis.com/maps/api/place/details/json?place_id=PLACE_ID&key=YOUR_API_KEY
-
     const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=${GOOGLE_API_KEY}`;
-    // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
-    console.log(url);
-
+    console.log("maps >>> ", url);
+    setIsUserChangedLocation(false);
     try {
       const response = await fetch(url);
       const data = await response.json();
       const { lat, lng } = data.result.geometry.location;
       const formatted_address = data.result.formatted_address;
       const { name, address_components, place_id, plus_code, url: address_url } = data.result;
-      console.log(JSON.stringify({ lat, lng, formatted_address, name, address_components, place_id, plus_code, address_url }));
+      console.log("fetchGeoCode , >>> ", JSON.stringify({ lat, lng, formatted_address, name, address_components, place_id, plus_code, address_url }));
       setRegion({
         latitude: lat,
         longitude: lng,
@@ -153,7 +162,7 @@ export default function LocationPicker() {
           longitudeDelta: 0.002,
         });
       }
-      setAddress({ latitude:lat, longitude: lng, formatted_address, name, address_components, place_id, plus_code, address_url });
+      setAddress({ latitude: lat, longitude: lng, formatted_address, name, address_components, place_id, plus_code, address_url });
     } catch (error) {
       console.error(error);
     }
@@ -175,13 +184,12 @@ export default function LocationPicker() {
       params = `&language=en`
     }
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${params}&radius=50000`;
-    console.log(url);
+    console.log("fetchPlaces >>> ", url);
 
     try {
       const response = await fetch(url);
       const data = await response.json();
-      console.log(data.predictions[0]);
-
+      console.log("fetchPlaces >>> ", data);
       setResults(data.predictions || []);
     } catch (error) {
       console.error(error);
@@ -205,44 +213,7 @@ export default function LocationPicker() {
       <View className="h-full">
         <Header title="Select delivery location" icon={icon} />
         <View className="flex-1 w-full h-full" style={styles.container}>
-          {/* <GooglePlacesAutocomplete
-            ref={searchRef}
-            placeholder="Search area, street, name..."
-            fetchDetails={true}
-            enableHighAccuracyLocation={true}
-            nearbyPlacesAPI="GooglePlacesSearch"
-            onPress={(data, details: any) => {
-              // Extract the location details
-              const { lat, lng } = details.geometry.location;
-              console.log(lat, lng);
-              
-              // Update the map's region
-              setRegion({
-                latitude: lat,
-                longitude: lng,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              });
 
-              // Move the map to the selected location
-              if (mapRef.current) {
-                mapRef.current.animateToRegion({
-                  latitude: lat,
-                  longitude: lng,
-                  latitudeDelta: 0.002,
-                  longitudeDelta: 0.002,
-                });
-              }
-            }}
-            query={{
-              key: GOOGLE_API_KEY,
-              language: "en",              
-            }}
-            styles={{
-              container: styles.autocompleteContainer,
-              textInput: styles.textInput,
-            }}
-          /> */}
           <View style={styles.autocompleteContainer} className="bg-transparent">
             <View className="flex flex-row justify-center w-[334px] bg-[#FFFFFF] rounded-[16px] border-[1px] border-[#EAECF0] h-[48px]">
               <View className="pt-[16px] pe-[7.5px] ms-[16px]">
@@ -252,6 +223,7 @@ export default function LocationPicker() {
                 />
               </View>
               <TextInput
+                ref={searchRef}
                 className="flex-1"
                 placeholder="Search area, street, name..."
                 value={query}
@@ -260,7 +232,8 @@ export default function LocationPicker() {
             </View>
             <FlatList
               data={results}
-              className="bg-[#FFFFFF] rounded-[16px] mt-[2px] max-h-[200px] w-[334px]"
+              className="bg-[#FFFFFF] rounded-[16px] mt-[2px] max-h-[200px] w-[360px]"
+              contentContainerClassName={classNames(results.length ? "px-[10px] py-[5px]" : null)}
               renderItem={({ item }) => (
                 <>
                   <TouchableOpacity onPress={() => fetchGeoCode(item.place_id)}>
@@ -287,30 +260,28 @@ export default function LocationPicker() {
             />
           </View>
 
-          <View>
-            
-          </View>
-          <TouchableOpacity
-            className="bg-card rounded-[6px] flex justify-center items-center"
-            onPress={onCurrentLocation}
-            style={styles.currentLocationButton}
-          >
-            <View className="flex flex-row items-center justify-between ps-[20px] ">
-              <View className="me-[4px]">
-                <Image
-                  source={require("../../assets/images/gps.png")}
-                  style={{ width: 24, height: 24 }}
-                />
+          <View style={styles.currentLocationButtonContainer} className="bg-transparent">
+            <TouchableOpacity
+              className="bg-card rounded-[6px] flex justify-center items-center w-[187px] h-[39px] px-[20px] pt-[10px] pb-[9px] border-[0.6px] border-primary shadow-drop-shadow"
+              onPress={onCurrentLocation}
+              style={{ height: 39, width: 187, padding: 10 }}
+            >
+              <View className="flex flex-row items-center justify-between">
+                <View className="me-[4px]">
+                  <Image
+                    source={require("../../assets/images/gps.png")}
+                    style={{ width: 24, height: 24 }}
+                  />
+                </View>
+                <Text className="text-secondary font-gotham font-[350] text-[14px] leading-[14.4px]">
+                  Use current location
+                </Text>
               </View>
-              <Text className="text-secondary font-gotham font-[350] text-[14px] leading-[14.4px]">
-                Use current location
-              </Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           <MapView
             ref={mapRef}
             style={{ flex: 1 }}
-            // provider="google"
             region={
               {
                 latitude: +(location?.latitude || 0),
@@ -321,14 +292,9 @@ export default function LocationPicker() {
             }
             onRegionChange={(ev) => setRegion(ev)}
             onRegionChangeComplete={onRegionChange}
-            showsMyLocationButton={true}
             showsCompass={true}
-            showsScale={true}
-            showsTraffic={true}
-            showsBuildings={true}
-            showsIndoors={true}
-            showsPointsOfInterest={true}
-            showsIndoorLevelPicker={true}
+            showsMyLocationButton={true}
+            onPanDrag={() => (setIsUserChangedLocation(true), onOutOfFocus())}
           >
             <Marker
               ref={markerRef}
@@ -350,6 +316,13 @@ export default function LocationPicker() {
                   source={require("@/assets/images/arrow-down.png")}
                   style={{ width: 20, height: 20, margin: -10 }}
                 />
+                {/* <Image
+                  source={require("@/assets/images/marker-ellipse.png")}
+                  style={{ width: 38, height: 38 }}
+                /> */}
+                <View className="flex flex-row justify-center items-center bg-[#DAFF6F] w-[38px] h-[38px] rounded-full opacity-[50%]">
+                  <View className="bg-[#1F2937] w-[12px] h-[12px] rounded-full"></View>
+                </View>
               </View>
             </Marker>
           </MapView>
@@ -366,7 +339,7 @@ export default function LocationPicker() {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -383,7 +356,7 @@ const styles = StyleSheet.create({
     top: 16,
     left: 0,
     right: 0,
-    zIndex: 1,
+    zIndex: 100,
 
     display: 'flex',
     flexDirection: 'column',
@@ -391,20 +364,17 @@ const styles = StyleSheet.create({
     alignItems: 'center'
 
   },
-  currentLocationButton: {
+  currentLocationButtonContainer: {
     position: "absolute",
     bottom: 157,
-    left: 110,
-    right: 110,
+    left: 0,
+    right: 0,
     zIndex: 1,
-    minWidth: 187,
-    height: 48,
-    borderColor: "#EF6C00",
-    borderWidth: 0.6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 9,
+
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textInput: {
     backgroundColor: "#FFFFFF",
