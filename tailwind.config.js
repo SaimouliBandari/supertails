@@ -84,6 +84,9 @@ module.exports = {
         "lato-light": ["Lato-Light"],
         "lato-bold": ["Lato-Bold"],
       },
+      boxShadow: {
+        "drop-shadow": "0px 4px 9px 0px #00000040, 0px -4px 4px 0px #0000001F",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
