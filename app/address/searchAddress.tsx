@@ -1,8 +1,9 @@
 import Header from "@/components/header/header";
 import LocationPermission from "@/components/locationPermision";
 import { GOOGLE_API_KEY } from "@/constants/variables";
-import useGeoLocationStore from "@/store/geoLocationStore";
+import useStore from "@/store/store";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import classNames from "classnames";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -34,7 +35,7 @@ import {
  * <SearchAddress />
  *
  * @remarks
- * This component uses the `useGeoLocationStore` hook to access and set the user's geolocation.
+ * This component uses the `useStore` hook to access and set the user's geolocation.
  * It also uses the `useRouter` hook from `expo-router` for navigation.
  *
  * @todo Implement navigation for the `onLocationSelection` function.
@@ -43,7 +44,8 @@ export default function SearchAddress() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const router = useRouter();
-  const { location, setLocation } = useGeoLocationStore()
+  const { location, setLocation, isLocationPermissionGranted } = useStore()
+  const [inputFocused, setInputFocused] = useState(false);
   const controller = new AbortController();
 
   const onBackNavigation = () => {
@@ -70,8 +72,8 @@ export default function SearchAddress() {
    */
   const fetchPlaces = async (text: string) => {
     const signal = controller.signal;
-    controller.abort()
-  
+    // controller.abort()
+
     setQuery(text);
     let parmas = `&language=en&location=${location?.latitude},${location?.longitude}&radius=50000`
     if (!location?.latitude || !location?.longitude) {
@@ -79,7 +81,7 @@ export default function SearchAddress() {
     }
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_API_KEY}${parmas}`;
     try {
-      const response = await fetch(url, {signal});
+      const response = await fetch(url, { signal });
       const data = await response.json();
       setResults(data.predictions || []);
     } catch (error) {
@@ -100,14 +102,13 @@ export default function SearchAddress() {
   );
 
   return (
-    <SafeAreaView className="h-full ">
+    <SafeAreaView className="h-full">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        // keyboardVerticalOffset={Platform.OS === "ios" ?  : 0}
-        className="flex-1 flex-col relative"
+        className="flex-1"
       >
         <Header title="Add address" icon={icon} />
-        <LocationPermission />
+        {!isLocationPermissionGranted && <LocationPermission />}
         <View className="h-[48px] shadow-white border-[1px] rounded-[16px] flex flex-row mx-[16px] mt-[14px]">
           <View className="pt-[16px] pe-[7.5px] ms-[16px]">
             <Image
@@ -120,10 +121,12 @@ export default function SearchAddress() {
             placeholder="Search area, street, name..."
             value={query}
             onChangeText={fetchPlaces}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
           />
         </View>
 
-        <TouchableOpacity className="mt-[15px]">
+        {isLocationPermissionGranted && <TouchableOpacity className="mt-[15px]">
           <View className="w-full h-[40px] flex flex-row items-center justify-between ps-[16px]">
             <View className="flex flex-row items-center justify-between">
               <View className="me-[5px]">
@@ -143,7 +146,7 @@ export default function SearchAddress() {
               />
             </View>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity>}
 
         <View className="ps-[16px] pe-[26px] mt-[9px]">
           <View className=" border-b-[0.4px] border-[#00000033]"></View>
@@ -179,8 +182,9 @@ export default function SearchAddress() {
             )}
           />
         </View>
+
         <TouchableOpacity
-          className="mt-[15px] bg-card h-[46px] w-full justify-self-end bottom-0"
+          className={classNames("mt-[15px] bg-card h-[46px] w-full justify-self-end", inputFocused ? "absolute bottom-[22.3rem]" : "absolute bottom-0")}
           onPress={() => onManualAddressEntry()}
         >
           <View className="flex-1 flex flex-row items-center justify-center ps-[16px]">
@@ -190,7 +194,7 @@ export default function SearchAddress() {
                 style={{ width: 24, height: 24 }}
               />
             </View>
-            <Text className="text-secondary font-gotham font-[350] text-[14px] leading-[16.8px]">
+            <Text className="text-secondary font-gotham font-[350] text-[14px] leading-[16.8px] ">
               Add address manually
             </Text>
           </View>
