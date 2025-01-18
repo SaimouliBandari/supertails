@@ -11,13 +11,13 @@ import MapView from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { regionDataGenerator } from "./location";
-import useGeoLocationStore from "@/store/geoLocationStore";
+import useStore from "@/store/store";
 import { generateAddress } from "@/utils/generator.service";
 
 export default function LocationPicker() {
   const mapRef = useRef<MapView>(null);
   const router = useRouter();
-  const { location: region, address } = useGeoLocationStore()
+  const { location: region, address } = useStore()
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
