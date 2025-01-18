@@ -42,7 +42,7 @@ const saveAsButtons = [
 export default function LocationPicker() {
   const mapRef = useRef<MapView>(null);
   const router = useRouter();
-  const { location: region, address, deliveryAddress } = useStore()
+  const { location: region, address, deliveryAddress, reset: resetState } = useStore()
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -70,6 +70,12 @@ export default function LocationPicker() {
     })
 
   }, [])
+
+  const onSave = () => {
+
+    resetState()
+    router.replace('/')
+  }
 
   const onBackNavigation = () => {
     router.back();
@@ -310,7 +316,7 @@ export default function LocationPicker() {
                 <View className="w-full mt-[13px]">
                   <TouchableOpacity
                     className="bg-primary h-[40px] rounded-[6px] flex justify-center items-center"
-                    onPress={() => 0}
+                    onPress={onSave}
                   >
                     <Text className="text-primary-foreground font-gotham font-[325] text-[16px] text-center leading-[19.2px]">
                       Save address

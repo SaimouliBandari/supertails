@@ -38,7 +38,8 @@ interface IStore {
     setLocationAndAddress: (location: IGeoLocationRegion, address: any) => void;
     clearLocationAndAddress: () => void;
     setIsLocationPermissionGranted: (isLocationPermissionGranted: boolean) => void;
-    setDeliveryAddress: (address: IAddress, user: IUserDetails) => void
+    setDeliveryAddress: (address: IAddress, user: IUserDetails) => void,
+    reset: () => void
 }
 
 const useStore = create<IStore>((set) => ({
@@ -68,7 +69,28 @@ const useStore = create<IStore>((set) => ({
     setLocationAndAddress: (location: IGeoLocationRegion, address: any) => set({ location, address }),
     clearLocationAndAddress: () => set({ location: null, address: null }),
     setIsLocationPermissionGranted: (isLocationPermissionGranted: boolean) => set({ isLocationPermissionGranted }),
-    setDeliveryAddress: (address: IAddress, user: IUserDetails) => set({ deliveryAddress: { address, user } })
+    setDeliveryAddress: (address: IAddress, user: IUserDetails) => set({ deliveryAddress: { address, user } }),
+    reset: () => set((state) => ({
+        location: null, // rename to region
+        address: null,
+        isLocationPermissionGranted: false,
+        deliveryAddress: {
+            address: {
+                address: '',
+                pincode: '',
+                city: '',
+                state: '',
+                houseFlat: '',
+                buildingNo: '',
+                roadName: ''
+            },
+            user: {
+                receiverName: '',
+                receiverPhone: '',
+                petName: ''
+            }
+        }
+    }))
 }));
 
 export default useStore;
