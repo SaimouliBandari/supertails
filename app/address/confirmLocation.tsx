@@ -2,15 +2,15 @@ import AddressPlaceholder from "@/components/addressPlaceholder";
 import Header from "@/components/header/header";
 import useStore from "@/store/store";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import classNames from "classnames";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { lazy, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { regionDataGenerator } from "./location";
-import classNames from "classnames";
 
 const saveAsButtons = [
   {
@@ -39,6 +39,28 @@ const saveAsButtons = [
   }
 ]
 
+/**
+ * LocationPicker component for confirming and saving delivery address details.
+ * 
+ * @component
+ * @description A form component that allows users to:
+ * - View selected location on a map
+ * - Enter complete address details (house/flat no, building name, landmark)
+ * - Save address with a label (Home/Office/Others)
+ * - Add receiver and pet details
+ * 
+ * @uses {MapView} For displaying selected location
+ * @uses {react-hook-form} For form handling
+ * @uses {useStore} For managing address state
+ * 
+ * @returns {JSX.Element} A SafeAreaView containing:
+ * - Header with back navigation
+ * - Map view showing selected location
+ * - Form fields for address details
+ * - Save address type selector
+ * - Receiver and pet information fields
+ * - Save address button
+ */
 export default function LocationPicker() {
   const mapRef = useRef<MapView>(null);
   const router = useRouter();

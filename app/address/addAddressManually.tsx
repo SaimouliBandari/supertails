@@ -18,6 +18,40 @@ import { getAddressesFromZipCode, getPlaceDetails } from "@/services/location.ap
 import { GOOGLE_API_KEY } from "@/constants/variables";
 import useStore from "@/store/store";
 
+/**
+ * A component for manually adding a new address with user details.
+ * 
+ * This component provides a form interface for users to input:
+ * - Address details (pincode, city, state, house/flat number, building number, road name)
+ * - Receiver's details (name, phone number, pet name)
+ * 
+ * Features:
+ * - Auto-fills city and state based on pincode input
+ * - Form validation using react-hook-form
+ * - Google Places API integration for address verification
+ * - Location coordinates storage for delivery
+ * - Option to set as default address
+ * - Keyboard avoiding behavior for better mobile UX
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * <AddAddressManually />
+ * ```
+ * 
+ * @returns {JSX.Element} A form interface for adding a new address
+ * 
+ * @dependencies
+ * - expo-router
+ * - react-hook-form
+ * - expo-checkbox
+ * - @expo/vector-icons
+ * 
+ * @uses
+ * - useStore - For state management
+ * - getAddressesFromZipCode - API service for pincode validation
+ * - getPlaceDetails - Google Places API service
+ */
 export default function AddAddressManually() {
   const router = useRouter();
   const { setLocationAndAddress, setDeliveryAddress } = useStore();
