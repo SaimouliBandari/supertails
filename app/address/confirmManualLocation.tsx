@@ -46,6 +46,47 @@ async function getCurrentLocation() {
 
 }
 
+/**
+ * A component for picking and confirming a location on a map.
+ * 
+ * This component provides functionality to:
+ * - Display a map with a draggable marker
+ * - Search for locations using Google Places API
+ * - Use current device location
+ * - Display address details
+ * - Confirm selected location
+ * 
+ * @component
+ * 
+ * @example
+ * ```tsx
+ * <LocationPicker />
+ * ```
+ * 
+ * @remarks
+ * The component uses:
+ * - expo-location for getting device location
+ * - react-native-maps for map display
+ * - Google Places API for location search
+ * - Custom store for location state management
+ * 
+ * @state
+ * - address: Selected address details
+ * - region: Current map region coordinates
+ * - query: Search input text
+ * - results: Location search results
+ * - isUserChangedLocation: Flag for user interaction with map
+ * - showEnableModal: Controls visibility of location permission modal
+ * 
+ * @dependencies
+ * - @expo/vector-icons
+ * - expo-location
+ * - react-native-maps
+ * - Google Places API
+ * 
+ * @returns React component that renders a location picker interface with map, 
+ * search functionality, and location confirmation controls
+ */
 export default function LocationPicker() {
   const router = useRouter();
   const mapRef = useRef<MapView>(null);

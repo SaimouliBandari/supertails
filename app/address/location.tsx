@@ -25,6 +25,44 @@ export function regionDataGenerator(latitude: any = 0, longitude: any = 0) {
 
 }
 
+/**
+ * A component that allows users to select a delivery location using a map interface.
+ * 
+ * @component
+ * @description
+ * This component provides a map interface with the following features:
+ * - Search functionality for locations using Google Places API
+ * - Current location detection and selection
+ * - Interactive map with draggable marker
+ * - Address display and confirmation
+ * - Reverse geocoding for selected coordinates
+ * 
+ * @returns {JSX.Element} A location picker interface with a map, search bar, and address confirmation
+ * 
+ * @example
+ * ```tsx
+ * <LocationPicker />
+ * ```
+ * 
+ * @state
+ * - address: Stores the selected address details
+ * - region: Current map region coordinates and deltas
+ * - query: Search input text
+ * - results: Array of location search results
+ * - isUserChangedLocation: Boolean flag for user interaction with map
+ * 
+ * @hooks
+ * - useRouter: For navigation handling
+ * - useRef: For map, marker, and search input references
+ * - useState: For managing component state
+ * - useStore: For global location state management
+ * - useEffect: For handling location updates
+ * 
+ * @dependencies
+ * - expo-location
+ * - react-native-maps
+ * - Google Places API
+ */
 async function getCurrentLocation() {
 
   let { status } = await requestForegroundPermissionsAsync();
