@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyAasxoqliptkWaRVgUnQ08nBi0OiPktvEw"
-      }
+      },
+      "bundleIdentifier": "com.saimouli.bandari.supertails"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +25,12 @@
           "apiKey": "AIzaSyAasxoqliptkWaRVgUnQ08nBi0OiPktvEw"
         }
       },
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.saimouli.bandari.supertails"
     },
     "web": {
       "bundler": "metro",
@@ -62,6 +68,13 @@
     "experiments": {
       "typedRoutes": true
     },
-    "assets": ["./assets/fonts/"]
+    "assets": [
+      "./assets/fonts/"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1d08151b-78d6-4c3d-a759-727c9a0e7175"
+      }
+    }
   }
 }
