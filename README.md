@@ -1,53 +1,141 @@
-# Welcome to your Expo app 👋
+# **Expo App**  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This repository contains a React Native app built using **Expo**. The app is designed as a prototype and includes features such as state management, navigation, and screen-based components.  
 
-## Get started
+---
 
-1. Install dependencies
+## **Table of Contents**  
 
+- [Features](#features)  
+- [Prerequisites](#prerequisites)  
+- [Getting Started](#getting-started)  
+- [Running the App](#running-the-app)  
+- [Folder Structure](#folder-structure)  
+- [Functionality](#functionality)  
+- [Tech Stack](#tech-stack)  
+
+---
+
+## **Features**  
+
+- **File-Based Navigation**: Lightweight and efficient routing for smaller applications.  
+- **State Management**: Simplified state sharing between components using Zustand.  
+- **Dynamic Screens**: Customizable dedicated screens for better UI/UX handling.  
+- **Reusable Components**: Shared UI components for consistency and maintainability.  
+- **Expo Tooling**: Rapid prototyping and simplified development workflows.  
+
+---
+
+## **Prerequisites**  
+
+Before running this project, ensure you have the following installed:  
+
+- **Node.js**: v14.x or newer  
+- **Git**: For cloning the repository  
+- **Expo Go App**: Available on [Android](https://play.google.com/store/apps/details?id=host.exp.exponent) or [iOS](https://apps.apple.com/app/expo-go/id982107779) if not using simulator 
+
+---
+
+## **Getting Started**  
+
+Follow these steps to set up the project locally:  
+
+1. **Clone the Repository**:  
+   ```bash
+   git clone <repository_url>
+   cd <project_directory>
+   ```  
+
+2. **Install Dependencies**:  
+   Run the following command to install the necessary packages:  
    ```bash
    npm install
-   ```
+   ```  
 
-2. Start the app
+3. **Start the Development Server**:  
+   Use the following command to launch the Expo development server:  
+   ```bash
+   npx expo start
+   ``` 
+   Or
 
    ```bash
-    npx expo start
+   npm run start 
    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## **Running the App**  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+After starting the development server:  
 
-## Get a fresh project
+1. **Using Expo Go**:  
+   - Open the Expo Go app on your device.  
+   - Scan the QR code displayed in your terminal or browser.  
 
-When you're ready, run:
+2. **Using a Simulator**:  
+   - For **iOS**, press `i` to open the app in an iOS simulator (macOS required).  
+   - For **Android**, press `a` to open the app in an Android emulator.  
 
-```bash
-npm run reset-project
+---
+
+## **Folder Structure**  
+
+Here’s an overview of the folder structure:  
+
 ```
+project-directory/  
+├── assets/               # Static assets (e.g., images, fonts)  
+├── components/           # Reusable UI components  
+├── app/              # Screen-specific components  
+|   ├── index.tsx
+|   ├── _layout.tsx
+│   ├── address/
+|       ├── _layout.tsx
+│       ├── HomeScreen.tsx    # Example home screen  
+│       ├── LocationPicker.tsx  
+|       ├── ManualAddLocationPicker.tsx 
+│       └── ...
+├── store/                # Zustand state management files  
+└── babel.config.js       # babel configuration file  
+└── metro.config.js       # metro configuration file  
+└── tailwind.config.js    # tailwindcss configuration file  
+└── global.css            # global css for tailwindcss 
+└── package.json          # Project dependencies  
+```  
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## **Functionality**  
 
-To learn more about developing your project with Expo, look at the following resources:
+### **Key Features and Functionalities**  
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. **File-Based Navigation**  
+   - Screens are automatically linked based on their file structure.  
+   - Simplifies route management and reduces boilerplate.  
 
-## Join the community
+2. **Global State Management with Zustand**  
+   - Efficient state sharing between components.  
+   - Reduces complexity compared to Redux while retaining flexibility.  
 
-Join our community of developers creating universal apps.
+3. **Location Management**  
+   - **LocationPicker.tsx**: Allows users to select a location dynamically.  
+   - **ManualAddLocationPicker.tsx**: Enables manual input for location details.  
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-https://supertails.notion.site/Developer-Frontend-Assignment-165b6b2163f980a28fb4e19b843b3b87
+4. **Reusable Components**  
+   - Common UI elements (e.g., buttons, input fields) are designed for reuse across screens.  
 
-https://www.figma.com/file/w7f6zLkyskgbWOzdYQUvOh?node-id=0:1&locale=en&type=design
+5. **Customizable Screens**  
+   - Screens are dedicated for specific features but can be tailored easily.  
+
+---
+
+## **Tech Stack**  
+
+The project is built using the following technologies:  
+
+- **React Native**: Cross-platform development framework.  
+- **Expo**: Simplifies app creation and testing.  
+- **Zustand**: Lightweight state management library.  
+- **JavaScript/TypeScript**: For clean and maintainable code.
+- **TailwindCss**: CSS framework for rapidly building custom user interfaces  
