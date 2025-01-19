@@ -66,7 +66,7 @@ export default function SearchAddress() {
       console.log(data, "<<<< data");
 
       setLocationAndAddress({ latitude: data.latitude, longitude: data.longitude, longitudeDelta: 0.0001, latitudeDelta: 0.0001 }, data);
-      router.push("/address/location");
+      router.push("/address/locationPicker");
     });
   };
 
