@@ -59,7 +59,7 @@ export default function Index() {
 
     let location = await Location.getCurrentPositionAsync({});
     router.push({
-      pathname: "/address/location",
+      pathname: "/address/locationPicker",
     });
     setIsLocationPermissionGranted(true);
     setLocation({
@@ -82,8 +82,9 @@ export default function Index() {
     <SafeAreaView>
       <View className="flex flex-col justify-between  items-center h-full">
         {/* <Text>Edit app/index.tsx to edit this screen.</Text> */}
+        {/* Testing exiting and new user */}
         <View className='flex flex-col justify-center items-center flex-1 gap-10'>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="bg-primary-foreground border-[0.6px] border-primary w-[343px] h-[48px] rounded-[6px] flex justify-center items-center"
             onPress={() => setUserType("existing")}
           >
@@ -98,7 +99,7 @@ export default function Index() {
             <Text className="text-secondary font-gotham font-[325] text-[16px] text-center leading-[19.2px]">
               New User
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
 

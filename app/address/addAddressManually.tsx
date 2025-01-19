@@ -72,11 +72,10 @@ export default function AddAddressManually() {
 
   const [pincode] = watch(["pincode"]);
 
-  useEffect(() => {
-
-    reset({ "address": "", "buildingNo": "Na", "city": "Visakhapatnam", "houseFlat": "18-214/1", "petName": "Simba", "pincode": "530027", "receiverName": "Mouli", "receiverPhone": "8985521158", "roadName": "Bharath nagar 7th lane", "state": "Andhra Pradesh" })
-
-  }, [])
+  // For testing purpose
+  // useEffect(() => {
+  //   reset({ "address": "", "buildingNo": "Na", "city": "Visakhapatnam", "houseFlat": "18-214/1", "petName": "Simba", "pincode": "530027", "receiverName": "Mouli", "receiverPhone": "8985521158", "roadName": "Bharath nagar 7th lane", "state": "Andhra Pradesh" })
+  // }, [])
 
   useEffect(() => {
     if (pincode) {
@@ -145,7 +144,7 @@ export default function AddAddressManually() {
       ...address
     }, { ...address })
 
-    router.push("/address/confirmManualLocation")
+    router.push("/address/manualAddLocationPicker")
   };
 
   const icon = (
@@ -180,7 +179,7 @@ export default function AddAddressManually() {
                 render={({ field: { onChange, value }, fieldState }) => (
                   <View>
                     <TextInput
-                      className="border h-[48px] border-gray-300 py-[16px] ps-[18px] rounded-[16px] bg-background placeholder:text-[12px] placeholder:text-placeholder placeholder:text-[12px] placeholder:text-placeholder"
+                      className="border h-[48px] border-gray-300 py-[16px] ps-[18px] rounded-[16px] bg-background placeholder:text-[12px] placeholder:text-placeholder "
                       placeholder="Pincode"
                       onChangeText={onChange}
                       value={value}
