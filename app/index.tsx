@@ -6,6 +6,42 @@ import { Text, TouchableOpacity, View } from "react-native";
 import "react-native-get-random-values";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * The main component of the application that handles user type selection and location-based address addition.
+ *
+ * @returns {JSX.Element} The rendered component.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Index />
+ * )
+ *
+ * @remarks
+ * This component uses the `expo-location` and `expo-router` libraries to handle location permissions and navigation.
+ * It also utilizes the `useStore` hook to manage state related to location and permission status.
+ *
+ * @function getCurrentLocation
+ * Requests the user's location permission and retrieves the current location if granted.
+ * If permission is denied, navigates to the address search screen.
+ *
+ * @function onAddAddress
+ * Handles the logic for adding an address based on the user type.
+ * If the user is new, it retrieves the current location.
+ * If the user is existing, it navigates to the address selection screen.
+ *
+ * @state {string} userType - The type of user, either "new" or "existing".
+ *
+ * @hook useStore - Custom hook to manage location and permission state.
+ * @hook useRouter - Hook from `expo-router` to handle navigation.
+ * @hook useState - React hook to manage component state.
+ *
+ * @requires expo-location
+ * @requires expo-router
+ * @requires react-native
+ * @requires react-native-get-random-values
+ * @requires react-native-safe-area-context
+ */
 export default function Index() {
   const router = useRouter();
   const { setLocation, setIsLocationPermissionGranted } = useStore()
