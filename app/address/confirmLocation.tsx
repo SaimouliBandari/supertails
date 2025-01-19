@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { regionDataGenerator } from "./location";
+import { regionDataGenerator } from "./locationPicker";
 
 const saveAsButtons = [
   {
