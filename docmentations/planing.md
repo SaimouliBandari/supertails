@@ -70,6 +70,7 @@ This approach will strike a balance between code reusability and flexibility, al
 
 ---
 
-By making these decisions, I aimed to create a prototype that is simple, efficient, and easy to adapt within the given constraints. Each choice reflects a balance between rapid development, maintainability, and scalability for future iterations.  
+### 7. Validations
+I this i also added some basic validation
 
-Let me know if you'd like me to refine any section further or add more details!
+By making these decisions, I aimed to create a prototype that is simple, efficient, and easy to adapt within the given constraints. Each choice reflects a balance between rapid development, maintainability, and scalability for future iterations.
